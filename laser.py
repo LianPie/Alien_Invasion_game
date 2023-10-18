@@ -1,10 +1,10 @@
 import pygame
 
 class Laser(pygame.sprite.Sprite):
-    def __init__(self,pos,screen_height,speed= -8):
+    def __init__(self,pos,screen_height,color,speed= -8):
         super().__init__()
         self.image=pygame.Surface((4,10))
-        self.image.fill('white')
+        self.image.fill(color)
         self.rect= self.image.get_rect(center = pos)
         self.speed= speed
         self.max_y_constraint= screen_height

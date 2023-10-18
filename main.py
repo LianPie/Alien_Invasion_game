@@ -3,6 +3,8 @@ import sys
 from PlayerShip import PLayer
 import obstacles
 from alien import Alien
+from random import choice
+from laser import Laser
 
 
 class game:
@@ -26,6 +28,7 @@ class game:
 
         #aliens
         self.aliens=pygame.sprite.Group()
+        self.alien_lasers= pygame.sprite.Group()
         self.AlienSetup(6, 8)
         self.alienspeed = 1
         
@@ -45,6 +48,17 @@ class game:
                 
                 alien_sprite= Alien(RowColor,x,y)
                 self.aliens.add(alien_sprite)
+
+    def alien_move_down(self, distance):
+        if self.aliens:
+            for Alien in self.aliens.sprites():
+                Alien.rect.y += distance
+
+    def alien_shoot(self):
+        if self.aliens.sprites():
+            random_alien= choice(self.aliens.sprites())
+            laser_sprite= Laser(random_alien.rect.center,screen_height,'white', 6 )
+            self.alien_lasers.add(laser_sprite)
 
     def CreatObstacle(self, x_start, y_start, offset_x):
         for row_index, row in enumerate(self.shape):
@@ -74,13 +88,14 @@ class game:
         self.ship.update()
         self.aliens.update(self.alienspeed)
         self.AlienConstrainte()
-        
+        self.alien_lasers.update()
 
         self.ship.draw(screen)
         
         self.blocks.draw(screen)
 
         self.aliens.draw(screen)
+        self.alien_lasers.draw(screen)
 
 
 
@@ -94,11 +109,16 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     game=game()
 
+    ALIENLAZER = pygame.USEREVENT+1
+    pygame.time.set_timer(ALIENLAZER,500)
+
     while True:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == ALIENLAZER:
+                game.alien_shoot()
         screen.fill((30,30,30))
         game.run()
 

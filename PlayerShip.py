@@ -40,7 +40,7 @@ class PLayer(pygame.sprite.Sprite):
              self.rect.right = self.max_x_constrainte
 
     def shoot_laser(self):
-        self.lasers.add(Laser(self.rect.center,self.rect.bottom))
+        self.lasers.add(Laser(self.rect.center,self.rect.bottom,'yellow'))
         
 
     def update(self):
