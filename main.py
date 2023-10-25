@@ -3,9 +3,9 @@ import sys
 from PlayerShip import PLayer
 import obstacles
 from alien import Alien
-from random import choice
+from random import choice, randint
 from laser import Laser
-
+from alien import Extra
 
 class game:
 
@@ -31,6 +31,11 @@ class game:
         self.alien_lasers= pygame.sprite.Group()
         self.AlienSetup(6, 8)
         self.alienspeed = 1
+
+        #extra
+        self.extra=pygame.sprite.GroupSingle()
+        self.extra_spawn_time= randint(40,80)
+
         
 
     def AlienSetup (self, rows, cols,x_distance=50,y_distance=50, x_offset=100, y_offset=100):
@@ -59,6 +64,14 @@ class game:
             random_alien= choice(self.aliens.sprites())
             laser_sprite= Laser(random_alien.rect.center,screen_height,'white', 6 )
             self.alien_lasers.add(laser_sprite)
+
+
+    def extra_alien_timer(self):
+        self.extra_spawn_time -=1
+        if self.extra_spawn_time <=0:
+            self.extra.add(Extra(choice(['right','left']), screen_weidth))
+            self.extra_spawn_time= randint(400,800)
+        
 
     def CreatObstacle(self, x_start, y_start, offset_x):
         for row_index, row in enumerate(self.shape):
@@ -89,6 +102,8 @@ class game:
         self.aliens.update(self.alienspeed)
         self.AlienConstrainte()
         self.alien_lasers.update()
+        self.extra_alien_timer()
+        self.extra.update()
 
         self.ship.draw(screen)
         
@@ -96,6 +111,7 @@ class game:
 
         self.aliens.draw(screen)
         self.alien_lasers.draw(screen)
+        self.extra.draw(screen)
 
 
 
