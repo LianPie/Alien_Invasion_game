@@ -65,6 +65,14 @@ class game:
             laser_sprite= Laser(random_alien.rect.center,screen_height,'white', 6 )
             self.alien_lasers.add(laser_sprite)
 
+    def AlienConstrainte(self):
+        all_aliens = self.aliens.sprites()
+        for alien in all_aliens:
+            if alien.rect.right >= screen_weidth:
+                self.alienspeed= -1
+            elif alien.rect.left == 0:
+                self.alienspeed= 1
+                
 
     def extra_alien_timer(self):
         self.extra_spawn_time -=1
@@ -86,15 +94,31 @@ class game:
         for x in offset:
             self.CreatObstacle(x_start,y_start,x)
 
-    def AlienConstrainte(self):
-        all_aliens = self.aliens.sprites()
-        for alien in all_aliens:
-            if alien.rect.right >= screen_weidth:
-                self.alienspeed= -1
-            elif alien.rect.left == 0:
-                self.alienspeed= 1
-                
-
+   
+    def collision_check(self):
+        #player lazers
+        if self.ship.sprite.lasers:
+            for laser in self.ship.sprite.lasers:
+                #obstacle
+                if pygame.sprite.spritecollide(laser,self.blocks,True):
+                    laser.kill()
+                #alien
+                if pygame.sprite.spritecollide(laser,self.aliens,True):
+                    laser.kill()
+                #extra
+                if pygame.sprite.spritecollide(laser,self.extra,True):
+                    laser.kill()
+        #alien lazers
+        if self.alien_lasers:
+            for laser in self.alien_lasers:
+                #obstacle
+                if pygame.sprite.spritecollide(laser,self.blocks,False):
+                    laser.kill()
+                #player
+                if pygame.sprite.spritecollide(laser,self.ship,False):
+                    laser.kill()
+                    print("ow")
+        
 
     def run(self):
         self.ship.sprite.lasers.draw(screen)
@@ -113,6 +137,7 @@ class game:
         self.alien_lasers.draw(screen)
         self.extra.draw(screen)
 
+        self.collision_check()
 
 
 
