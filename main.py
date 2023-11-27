@@ -14,7 +14,13 @@ class game:
         PLayer_sprite= PLayer((screen_weidth/2,screen_height),screen_weidth,5)
         self.ship=pygame.sprite.GroupSingle(PLayer_sprite)
         
+        #health and score
+        self.lives= 3
+        self.live_surf = pygame.image.load('graphics/PlayerLive.png').convert_alpha()
+        self.live_x_start_pos = (screen_weidth-(self.live_surf.get_size()[0] * 2 + 10))
 
+        self.score = 0
+        self.font = pygame.font.Font('font/Pixeled.ttf',15)
 
         #obstacle
         self.shape = obstacles.shape
@@ -102,11 +108,17 @@ class game:
                 #obstacle
                 if pygame.sprite.spritecollide(laser,self.blocks,True):
                     laser.kill()
+                
                 #alien
-                if pygame.sprite.spritecollide(laser,self.aliens,True):
+                aliens_hit = pygame.sprite.spritecollide(laser,self.aliens,True)
+                if aliens_hit:
+                    for alien in aliens_hit:
+                        self.score += alien.value
                     laser.kill()
+                
                 #extra
                 if pygame.sprite.spritecollide(laser,self.extra,True):
+                    self.score += 100
                     laser.kill()
         #alien lazers
         if self.alien_lasers:
@@ -117,27 +129,42 @@ class game:
                 #player
                 if pygame.sprite.spritecollide(laser,self.ship,False):
                     laser.kill()
-                    print("ow")
-        
+                    self.lives -=1
+                    if self.lives <= 0:
+                        pygame.quit()
+                        sys.exit()
+
+
+    def display_lives(self):
+        for live in range(self.lives - 1):
+            x= self.live_x_start_pos + (live * (self.live_surf.get_size()[0]+10))
+            screen.blit(self.live_surf, (x,8))
+
+    def display_score(self):
+        score_surf = self.font.render(f'SCORE: {self.score}' ,False, (0,255,255))
+        score_rect = score_surf.get_rect(topleft = (5,0))
+        screen.blit(score_surf, score_rect)
 
     def run(self):
         self.ship.sprite.lasers.draw(screen)
         self.ship.update()
         self.aliens.update(self.alienspeed)
-        self.AlienConstrainte()
-        self.alien_lasers.update()
-        self.extra_alien_timer()
         self.extra.update()
+        self.alien_lasers.update()
+
+        self.AlienConstrainte()
+        self.extra_alien_timer()
 
         self.ship.draw(screen)
-        
         self.blocks.draw(screen)
-
         self.aliens.draw(screen)
         self.alien_lasers.draw(screen)
         self.extra.draw(screen)
 
+
         self.collision_check()
+        self.display_lives()
+        self.display_score()
 
 
 

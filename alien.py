@@ -7,6 +7,11 @@ class Alien(pygame.sprite.Sprite):
         file_path= 'graphics/' + color + '.png'
         self.image=pygame.image.load(file_path).convert_alpha()
         self.rect= self.image.get_rect(topleft = (x,y))
+
+        if color == 'purple': self.value= 10
+        if color == 'red': self.value= 20
+        if color == 'green': self.value= 30
+        if color == 'yellow': self.value= 40
     
     def update(self, direction):
         self.rect.x += direction
@@ -22,7 +27,7 @@ class Extra(pygame.sprite.Sprite):
             x= -50
             self.speed= 3
 
-        self.rect= self.image.get_rect(topleft = (x,50))
+        self.rect= self.image.get_rect(topleft = (x,60))
 
     
     def update(self):
